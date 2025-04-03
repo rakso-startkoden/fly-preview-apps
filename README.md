@@ -8,22 +8,24 @@ If you have an existing `fly.toml` in your repo, this action will copy it with a
 
 ## Inputs
 
-| name       | description                                                                                                                                                                                              |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`     | The name of the Fly app. Alternatively, set the env `FLY_APP`. For safety, must include the PR number. Example: `myapp-pr-${{ github.event.number }}`. Defaults to `pr-{number}-{repo_org}-{repo_name}`. |
-| `image`    | Optional pre-existing Docker image to use                                                                                                                                                                |
-| `config`   | Optional path to a custom Fly toml config. Config path should be relative to `path` parameter, if specified.                                                                                             |
-| `region`   | Which Fly region to run the app in. Alternatively, set the env `FLY_REGION`. Defaults to `iad`.                                                                                                          |
-| `org`      | Which Fly organization to launch the app under. Alternatively, set the env `FLY_ORG`. Defaults to `personal`.                                                                                            |
-| `path`     | Path to run the `flyctl` commands from. Useful if you have an existing `fly.toml` in a subdirectory.                                                                                                     |
-| `postgres` | Optional name of an existing Postgres cluster to `flyctl postgres attach` to.                                                                                                                            |
-| `update`   | Whether or not to update this Fly app when the PR is updated. Default `true`.                                                                                                                            |
-| `secrets`  | Secrets to be set on the app. Separate multiple secrets with a space                                                                                                                                     |
-| `vmsize`   | Set app VM to a named size, eg. shared-cpu-1x, dedicated-cpu-1x, dedicated-cpu-2x etc. Takes precedence over cpu, cpu kind, and memory inputs.                                                           |
-| `cpu`      | Set app VM CPU (defaults to 1 cpu). Default 1.                                                                                                                                                           |
-| `cpukind`  | Set app VM CPU kind - shared or performance. Default shared.                                                                                                                                             |
-| `memory`   | Set app VM memory in megabytes. Default 256.                                                                                                                                                             |
-| `ha`       | Create spare machines that increases app availability. Default `false`.                                                                                                                                  |
+| name                | description                                                                                                                                                                                              |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`              | The name of the Fly app. Alternatively, set the env `FLY_APP`. For safety, must include the PR number. Example: `myapp-pr-${{ github.event.number }}`. Defaults to `pr-{number}-{repo_org}-{repo_name}`. |
+| `image`             | Optional pre-existing Docker image to use                                                                                                                                                                |
+| `config`            | Optional path to a custom Fly toml config. Config path should be relative to `path` parameter, if specified.                                                                                             |
+| `region`            | Which Fly region to run the app in. Alternatively, set the env `FLY_REGION`. Defaults to `iad`.                                                                                                          |
+| `org`               | Which Fly organization to launch the app under. Alternatively, set the env `FLY_ORG`. Defaults to `personal`.                                                                                            |
+| `path`              | Path to run the `flyctl` commands from. Useful if you have an existing `fly.toml` in a subdirectory.                                                                                                     |
+| `postgres`          | Optional name of an existing Postgres cluster to `flyctl postgres attach` to.                                                                                                                            |
+| `postgres_image`    | Custom Docker image to use for Postgres database when creating a new cluster. Example: `almirsarajcic/fly-pgvector`                                                                                      |
+| `postgres_volume_size`| Size of the Postgres database volume in GB. Defaults to 1.                                                                                                                                               |
+| `update`            | Whether or not to update this Fly app when the PR is updated. Default `true`.                                                                                                                            |
+| `secrets`           | Secrets to be set on the app. Separate multiple secrets with a space                                                                                                                                     |
+| `vmsize`            | Set app VM to a named size, eg. shared-cpu-1x, dedicated-cpu-1x, dedicated-cpu-2x etc. Takes precedence over cpu, cpu kind, and memory inputs.                                                           |
+| `cpu`               | Set app VM CPU (defaults to 1 cpu). Default 1.                                                                                                                                                           |
+| `cpukind`           | Set app VM CPU kind - shared or performance. Default shared.                                                                                                                                             |
+| `memory`            | Set app VM memory in megabytes. Default 256.                                                                                                                                                             |
+| `ha`                | Create spare machines that increases app availability. Default `false`.                                                                                                                                  |
 
 ## Required Secrets
 
@@ -127,6 +129,23 @@ steps:
     uses: superfly/fly-pr-review-apps@1.0.0
     with:
       postgres: myapp-postgres-staging-apps
+```
+
+## Example with custom Postgres image and volume size
+
+If you need a custom Postgres image (for example with extensions like pgvector) and a specific volume size, you can use the `postgres_image` and `postgres_volume_size` parameters:
+
+```yaml
+# ...
+steps:
+  - uses: actions/checkout@v4
+
+  - name: Deploy app
+    id: deploy
+    uses: optimumBA/fly-preview-apps@main
+    with:
+      postgres_image: almirsarajcic/fly-pgvector
+      postgres_volume_size: 5
 ```
 
 ## Example with multiple Fly apps
