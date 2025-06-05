@@ -27,6 +27,9 @@ inputs:
   postgres_volume_size:
     description: Size of the Postgres database volume in GB (defaults to 1)
     default: 1
+  postgres_vmsize:
+    description: Set postgres VM to a named size, eg. shared-cpu-1x, shared-cpu-2x, etc. (defaults to shared-cpu-1x)
+    default: shared-cpu-1x
   secrets:
     description: Secrets to be set on the app. Separate multiple secrets with a space
   vmsize:
